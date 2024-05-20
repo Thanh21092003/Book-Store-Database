@@ -1,0 +1,298 @@
+What is your name? Thanh Nguyen
+
+Use your MySQL database to provide data in the following information:
+
+3.	(50 points) Electronic and Printed (bring to class). In a text or code editor, use TheLittleProfessorQueries.txt, rename to xxTheLittleProfessorQueries.txt, where xx are your initials. Include the working SQL statement and the output for each question, including the row numbers. Be sure to number each of your answers.
+
+a.	Add the following book to the data base:
+bkcode		8177
+bktitle		Complete Metalsmith
+author (authorid)		McCreight, Tim (MT410)
+category_description (category)	Metals (MTLS)
+category_description (category)	Jewelry (JLRY)
+cost		40.00
+pub_year		2004
+in_stock_1		12
+in_stock_2		5
+in_stock_3		3
+in_stock_4		7
+reorder_point		25
+pub_code		BP
+pub_name		Brynmorgen Press
+pub_address		Brunswick, ME
+
+Note: you will be adding data to several different tables, not just one. You will have to be mindful of the order in which you add the data.
+
+1. INSERT IGNORE INTO Authors VALUES ('MT410', 'McCreight, Tim');
+2. INSERT IGNORE INTO Categories VALUES ('MTLS', 'Metals'), ('JLRY', 'Jewelry');
+3. INSERT IGNORE INTO Publishers VALUES ('BP', 'Brynmorgen Press', 'Brunswick, ME');
+4. INSERT IGNORE INTO Books VALUES (8177, 'Complete Metalsmith', 40.00, 2004, 25, 'MTLS', 'BP');
+5. INSERT IGNORE INTO Inventory VALUES (8177, 12, 5, 3, 7, 27);
+
+b.	Add the following authors:
+
+Stoll, Clifford (SC550)
+Mount, George (MG935)
+Adamski, Josef (AJ109)
+Zumsteub, Felix (FK309)
+Strachnyi, Kate (SK101) 
+
+1. INSERT INTO Authors VALUES 
+('SC550', 'Stoll, Clifford'),
+('MG935', 'Mount, George'),
+('AJ109', 'Adamski, Josef'),
+('FK309', 'Zumsteub, Felix'),
+('SK101', 'Strachnyi, Kate');
+
+c.	Make changes to the structure of the publishers table to accommodate these publishers.
+
+CL, Cengage Learning, Stamford, CT
+CPP, Cal Poly Publishing, San Luis Obispo, CA
+MKP, Morgan Kaufman Publishers, San Francisco, CA
+NS, Northamptonshire and Smith, Boston, MA
+
+1. ALTER TABLE Publishers
+2. MODIFY COLUMN pub_code VARCHAR(10),
+3. MODIFY COLUMN pub_name VARCHAR(255),
+4. MODIFY COLUMN pub_address VARCHAR(255);
+
+d.	Add those four publishers to the publishers table.
+
+1. INSERT INTO Publishers VALUES
+('CL', 'Cengage Learning', 'Stamford, CT'),
+('CPP', 'Cal Poly Publishing', 'San Luis Obispo, CA'),
+('MKP', 'Morgan Kaufman Publishers', 'San Francisco, CA'),
+('NS', 'Northamptonshire and Smith', 'Boston, MA');
+
+OUTPUT
+
+#	pub_code	pub_name	pub_address
+1	AP	Anchor Press		New York, NY
+2	BB	Bantam Books		New York, NY
+3	BP	Brynmorgen Press	Brunswick, ME
+4	GPP	G. P. Putnam's Sons	New York, NY
+5	JB	Jones Bartlett Learning	Burlington, MA
+6	MSP	Microsoft Press		Redmond, WA
+7	PB	Pocket Books		New York, NY
+8	PGB	Penguin Books		New York, NY
+9	RH	Random House		New York, NY
+10	SG	Signet			New York, NY
+
+e.	Change the first name of the author Adamski from Josef to Joseph. Change the publisher’s name G P Putman to G. P. Putman’s Sons
+
+1. UPDATE Authors
+2. SET author_name = 'Joseph'
+3. WHERE authorid = 'AJ109' AND author_name = 'Adamski, Josef';
+
+4. UPDATE Publishers
+5. SET pub_name = 'G. P. Putnam''s Sons'
+6. WHERE pub_code = 'GPP' AND pub_name = 'G P Putman';
+
+OUTPUT
+
+#	authorid	author_name
+1	AJ987	Archer Jeffrey
+2	CA098	Camus Albert
+3	CA177	Christie Agatha
+4	CA560	Clarke Arthur C.
+5	CC067	Cussler Clive
+6	CR230	Castleman Riva
+7	DD112	Doctor David
+8	FD672	Francis Dick
+9	GP381	Gimferrer Pere
+10	HR309	Hoffmann Rosemary
+11	HW112	Harmon Willis
+12	KF564	Kafka Franz
+13	KS666	King Stephen
+14	LH765	Lovecraft H. P.
+15	LM801	Last Mary
+16	MT410	McCreight, Tim
+17	N_065	Novalis
+18	PA765	Perez-Reverte Arturo
+19	PO824	Paz Octavio
+20	PP711	Pratt Philip
+21	RC809	Ruiz-Zafon Carlos
+22	RE711	Renn Erin
+23	SA801	Smith Adam
+24	SD178	Sobel Dava
+25	SR451	Southworth Rod
+26	TR025	Taylor Ryan
+27	WP909	Williams Peter
+28	ZP433	Zinbardo Philip
+
+f.	List the titles of books and number of authors for books that have more than one author.
+
+1. SELECT bktitle, COUNT(authorid) AS 'Number of Authors'
+2. FROM Books
+3. JOIN BookAuthors USING (bkcode)
+4. GROUP BY bkcode, bktitle
+5. HAVING COUNT(authorid) > 1;
+
+OUPUT
+
+#	bktitle		Number of Authors
+1	Web Programming		2
+2	Knockdown		2
+3	Python Programming	3
+4	Windows 10 Essentials	2
+
+g.	List book titles, the number of characters in the title (a space is a character) and the number of words in the title for book titles made up of more than 2 words. Use aliases and sorting to achieve the sorted results shown in example to the right.
+
+1. SELECT 
+    bktitle AS 'Book Title',
+    LENGTH(bktitle) AS 'Number of characters',
+    (LENGTH(bktitle) - LENGTH(REPLACE(bktitle, ' ', '')) + 1) AS 'Number of words'
+2. FROM Books
+3. WHERE
+    LENGTH(bktitle) - LENGTH(REPLACE(bktitle, ' ', '')) + 1 > 2
+4. ORDER BY
+    (LENGTH(bktitle) - LENGTH(REPLACE(bktitle, ' ', '')) + 1) DESC,
+    (LENGTH(bktitle) - LENGTH(REPLACE(bktitle, ' ', '')) + 1) ASC,
+    bktitle DESC;
+
+OUTPUT
+
+#	Book Title	Number of characters	Number of words
+1	The Dunwich Horror and Others	29	5
+2	Prints of the 20th Century	26	5
+3	Ghost from the Grand Banks	26	5
+4	The Painter of Battles	22	4
+5	Pirates of the Levant	21	4
+6	Hymns to the Night	18	4
+7	Evil Under the Sun	18	4
+8	Death on the Nile	17	4
+9	A Guide to SQL		14	4
+10	Windows 10 Essentials	21	3
+11	The Prodigal Daughter	21	3
+12	The Glass Universe	18	3
+13	The Angel's Game	16	3
+14	Kane and Abel		13	3
+15	First Among Equals	18	3
+
+h.	In which categories do publishers publish? List category descriptions and publisher name, for publishers NOT located in NY. Remove duplicates. Sort alphabetically by publisher, and for each publisher list categories in alphabetical order.
+
+1. SELECT DISTINCT category_description AS 'Category Description',
+       pub_name AS 'Publisher Name'
+2. FROM Publishers
+3. JOIN Books USING (pub_code)
+4. JOIN Categories USING (category_code)
+5. WHERE pub_address != 'New York, NY'
+       AND pub_address != 'New York'
+6. ORDER BY 'Publisher Name' ASC, 'Category Description' ASC;
+
+OUTPUT
+
+#	Category Description	Publisher Name
+1	Computer Science	Microsoft Press
+2	Computer Science	Jones Bartlett Learning
+3	Metals	Brynmorgen Press
+
+i.	List the store name and the total number of books in its inventory and the total number of for all branches to The Little Professor Bookstore.
+
+1. SELECT Store_name, SUM(in_stock_total) AS 'Total'
+2. FROM Stores
+3. JOIN Publishers USING (pub_code)
+4. JOIN Books USING (pub_code)
+5. JOIN Inventory USING (bkcode)
+6. GROUP BY Store_name;
+
+7. SELECT
+    'Overall Total' AS 'Store Name',
+    SUM(in_stock_total) AS 'Total'
+8. FROM
+    Inventory;
+
+OUTPUT
+
+#	Store_name	Total
+1	Three Lakes	437
+2	Sunset		437
+3	Meadows Mall	437
+4	Downtown	437
+
+#	Store Name	Total
+1	Overall Total	1534
+
+
+j.	Use an outer join to find the names of publishers who are not currently represented in the bookstore’s inventory.
+
+1. SELECT DISTINCT pub_name AS 'Publisher Name'
+2. FROM Publishers
+3. LEFT JOIN Books USING (pub_code)
+4. LEFT JOIN Inventory USING (bkcode)
+5. WHERE bkcode IS NULL;
+
+OUTPUT
+
+#	Publisher Name
+1	Cengage Learning
+2	Cal Poly Publishing
+3	Morgan Kaufman Publishers
+4	Northamptonshire and Smith
+
+k.	Use a subquery to find the names of authors who are not currently represented in the bookstore’s inventory.
+
+1. SELECT author_name
+2. FROM Authors
+3. WHERE authorid NOT IN (
+    SELECT DISTINCT authorid
+    FROM BookAuthors
+    JOIN Inventory USING (bkcode)
+);
+
+OUTPUT
+
+#	author_name
+1	McCreight, Tim
+
+l.	Produce a report for the inventory manager which lists the book title, the reorder point, the total number of copies in all the stores, and the action she should take on each title: Reorder (total less than or equal to the reorder point) or No need to reorder (total greater than reorder point. 
+
+1. SELECT bktitle AS 'Book Title',
+       reorder_point AS 'Reorder Point',
+       SUM(in_stock_total) AS 'Total',
+       IF(SUM(in_stock_total) <= reorder_point, 'Reorder', 'No need to reorder') AS 'Action'
+2. FROM Books
+3. JOIN Inventory USING (bkcode)
+4. GROUP BY bktitle, reorder_point
+5. ORDER BY bktitle;
+
+OUTPUT
+
+#	Book Title	Reorder Point	Total	Action
+1	A Guide to SQL		34	37	No need to reorder
+2	Amerika			55	64	No need to reorder
+3	Carrie			66	56	Reorder
+4	Complete Metalsmith	25	27	No need to reorder
+5	Cujo			14	21	No need to reorder
+6	Database Systems	44	40	Reorder
+7	Death on the Nile	70	70	Reorder
+8	Evil Under the Sun	29	22	Reorder
+9	First Among Equals	45	43	Reorder
+10	Ghost from the Grand Banks	36	46	No need to reorder
+11	Higher Creativity	58	49	Reorder
+12	Hymns to the Night	22	21	Reorder
+13	Kane and Abel		40	43	No need to reorder
+14	Knockdown		53	61	No need to reorder
+15	Longitude		41	37	Reorder
+16	Magritte		33	34	No need to reorder
+17	Marcel Duchamp		19	23	No need to reorder
+18	Night Probe		47	41	Reorder
+19	Pirates of the Levant	36	45	No need to reorder
+20	Prints of the 20th Century	55	48	Reorder
+21	Python Programming	39	35	Reorder
+22	Risk			79	73	Reorder
+23	Shyness			12	16	No need to reorder
+24	Smoke-screen		30	39	No need to reorder
+25	The Angel's Game	34	30	Reorder
+26	The Castle		47	43	Reorder
+27	The Dunwich Horror and Others	53	48	Reorder
+28	The Glass Universe	67	57	Reorder
+29	The Organ		43	44	No need to reorder
+30	The Painter of Battles	31	41	No need to reorder
+31	The Prodigal Daughter	38	42	No need to reorder
+32	The Stranger		27	36	No need to reorder
+33	Vixen 07		46	46	Reorder
+34	Vortex			45	54	No need to reorder
+35	Web Programming		47	40	Reorder
+36	Windows 10 Essentials	65	62	Reorder
+
